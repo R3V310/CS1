@@ -33,6 +33,10 @@ pipeline {
 
         // Identificador del incremento de producto
         SPRINT = "2"
+
+        //Nuevo
+        ADMIN_PASSWORD = "admin1234"
+        DB_SECRET_KEY = "clave_super_segura"
     }
 
     // ── OPCIONES DEL PIPELINE ───────────────────────────────

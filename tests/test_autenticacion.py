@@ -47,19 +47,23 @@ class TestHashPassword:
     def test_retorna_string(self):
         assert isinstance(_hash_password("test"), str)
 
-    def test_longitud_es_32_caracteres_md5(self):
-        assert len(_hash_password("cualquier_password")) == 32
+   def test_hash_contiene_salt_y_hash(self):
+    resultado = _hash_password("cualquier_password")
 
-    def test_mismo_input_mismo_output(self):
-        assert _hash_password("abc") == _hash_password("abc")
+    assert isinstance(resultado, str)
+    assert "$" in resultado
+
+    def test_mismo_input_genera_hashes_distintos_por_salt(self):
+    assert _hash_password("abc") != _hash_password("abc")
 
     def test_diferente_input_diferente_output(self):
         assert _hash_password("abc") != _hash_password("xyz")
 
     def test_string_vacio(self):
-        resultado = _hash_password("")
-        assert isinstance(resultado, str)
-        assert len(resultado) == 32
+    resultado = _hash_password("")
+
+    assert isinstance(resultado, str)
+    assert "$" in resultado
 
 
 # ─────────────────────────────────────────────
@@ -140,11 +144,14 @@ class TestGenerarTokenSesion:
         token = generar_token_sesion("ana")
         assert token.startswith("ana:")
 
-    def test_token_tiene_16_chars_despues_del_prefijo(self):
-        username = "usuario"
-        token = generar_token_sesion(username)
-        parte_token = token[len(username) + 1:]
-        assert len(parte_token) == 16
+    def test_token_tiene_64_chars_hex_despues_del_prefijo(self):
+    username = "usuario"
+
+    token = generar_token_sesion(username)
+
+    parte_token = token[len(username) + 1:]
+
+    assert len(parte_token) == 64
 
     def test_tokens_consecutivos_son_distintos(self):
         tokens = {generar_token_sesion("ana") for _ in range(20)}

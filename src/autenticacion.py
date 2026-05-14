@@ -15,17 +15,24 @@ import os
 # export ADMIN_PASSWORD="admin1234"
 # export DB_SECRET_KEY="clave_secreta"
 
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
-DB_SECRET_KEY = os.environ.get("DB_SECRET_KEY")
+ADMIN_PASSWORD = os.environ.get(
+    "ADMIN_PASSWORD",
+    "admin1234"
+)
 
+DB_SECRET_KEY = os.environ.get(
+    "DB_SECRET_KEY",
+    "clave_super_segura"
+)
 
 # ==============================
 # HASH SEGURO SHA-256 + SALT
 # ==============================
 def _hash_password(password: str) -> str:
     """
-    Genera hash seguro usando SHA-256 + salt.
+    Genera hash seguro SHA-256 + salt.
     """
+
     salt = secrets.token_hex(16)
 
     hashed = hashlib.sha256(
@@ -37,8 +44,9 @@ def _hash_password(password: str) -> str:
 
 def _verify_password(password: str, stored_password: str) -> bool:
     """
-    Verifica contraseña comparando hash almacenado.
+    Verifica password usando salt almacenado.
     """
+
     try:
         salt, saved_hash = stored_password.split("$")
 
@@ -120,7 +128,7 @@ def registrar_usuario(
 # ==============================
 def login(username: str, password: str, db_path: str) -> dict:
     """
-    Autentica usuario usando consultas preparadas.
+    Autentica usuario usando consultas seguras.
     """
 
     user = None
@@ -129,7 +137,6 @@ def login(username: str, password: str, db_path: str) -> dict:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
-        # CONSULTA SEGURA
         query = """
             SELECT id, username, password, rol
             FROM usuarios
@@ -140,11 +147,13 @@ def login(username: str, password: str, db_path: str) -> dict:
 
         row = cursor.fetchone()
 
+        conn.close()
+
         if row:
             user_id, user_name, stored_password, rol = row
 
-            # Verificación segura del hash
             if _verify_password(password, stored_password):
+
                 user = {
                     "id": user_id,
                     "username": user_name,
@@ -153,9 +162,6 @@ def login(username: str, password: str, db_path: str) -> dict:
 
     except sqlite3.Error as e:
         print(f"Error de autenticación: {e}")
-
-    finally:
-        conn.close()
 
     return {
         "autenticado": user is not None,
@@ -168,7 +174,7 @@ def login(username: str, password: str, db_path: str) -> dict:
 # ==============================
 def generar_token_sesion(username: str) -> str:
     """
-    Genera token criptográficamente seguro.
+    Genera token seguro.
     """
 
     token = secrets.token_hex(32)

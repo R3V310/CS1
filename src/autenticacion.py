@@ -15,15 +15,15 @@ import os
 # export ADMIN_PASSWORD="admin1234"
 # export DB_SECRET_KEY="clave_secreta"
 
-ADMIN_PASSWORD = os.environ.get(
-    "ADMIN_PASSWORD",
-    "admin1234"
-)
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
-DB_SECRET_KEY = os.environ.get(
-    "DB_SECRET_KEY",
-    "clave_super_segura"
-)
+DB_SECRET_KEY = os.environ.get("DB_SECRET_KEY")
+
+if not ADMIN_PASSWORD:
+    raise ValueError("ADMIN_PASSWORD no configurada")
+
+if not DB_SECRET_KEY:
+    raise ValueError("DB_SECRET_KEY no configurada")
 
 # ==============================
 # HASH SEGURO SHA-256 + SALT

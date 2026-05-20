@@ -35,9 +35,8 @@ pipeline {
         SPRINT = "2"
 
         //Nuevo
-        ADMIN_PASSWORD = "admin1234"
-        DB_SECRET_KEY = "clave_super_segura"
-    }
+        ADMIN_PASSWORD = credentials('admin-password')
+        DB_SECRET_KEY = credentials('db-secret-key')    }
 
     // ── OPCIONES DEL PIPELINE ───────────────────────────────
     options {
